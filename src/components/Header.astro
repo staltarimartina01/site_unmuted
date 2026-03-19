@@ -1,0 +1,216 @@
+---
+// Header.astro – UNMUTED Navigation
+const navLinks = [
+  { href: '/', label: 'Home' },
+  { href: '/reviews', label: 'Storie' },
+  { href: '/blog', label: 'Articoli' },
+  { href: '/risorse', label: 'Risorse' },
+  { href: '/contatti', label: 'Contatti' },
+];
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="UNMUTED – Home">
+      <img
+        src="/assets/logo/unmuted-logo-v3.png"
+        alt="UNMUTED by Martina Staltari"
+        class="logo-img"
+        width="120"
+        height="120"
+      />
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="desktop-nav" aria-label="Navigazione principale">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class:list={['nav-link', { active: currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) }]}
+        >
+          {link.label}
+        </a>
+      ))}
+      <a href="/contatti#calendly" class="btn btn-primary btn-sm">Prenota una chiamata</a>
+    </nav>
+
+    <!-- Mobile Hamburger -->
+    <button class="hamburger" id="hamburger-btn" aria-label="Apri menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <nav class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    {navLinks.map(link => (
+      <a href={link.href} class="mobile-nav-link">{link.label}</a>
+    ))}
+    <a href="/contatti#calendly" class="btn btn-primary" style="margin-top: 1rem; text-align: center;">Prenota una chiamata</a>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-navy);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0.75rem;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .logo-img {
+    height: 64px;
+    width: auto;
+    display: block;
+    transition: opacity 0.3s ease;
+  }
+
+  @media (min-width: 1024px) {
+    .logo-img {
+      height: 80px;
+    }
+  }
+
+  .logo:hover .logo-img {
+    opacity: 0.85;
+  }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .nav-link {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(248, 249, 251, 0.75);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: var(--transition-base);
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--color-gold);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-cloud);
+  }
+
+  .nav-link:hover::after,
+  .nav-link.active::after {
+    width: 100%;
+  }
+
+  .btn-sm {
+    padding: 0.55rem 1.2rem;
+    font-size: 0.78rem;
+  }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--color-cloud);
+    border-radius: 2px;
+    transition: var(--transition-base);
+  }
+
+  .hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    padding: 1rem 1.5rem 2.5rem;
+    background-color: var(--color-navy-dark);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-menu.open {
+    display: flex;
+  }
+
+  .mobile-nav-link {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(248, 249, 251, 0.85);
+    text-decoration: none;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: color 0.2s;
+  }
+
+  .mobile-nav-link:hover {
+    color: var(--color-gold);
+  }
+
+  @media (max-width: 768px) {
+    .desktop-nav { display: none; }
+    .hamburger { display: flex; }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('hamburger-btn');
+  const menu = document.getElementById('mobile-menu');
+
+  btn?.addEventListener('click', () => {
+    const isOpen = menu?.classList.toggle('open');
+    btn.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    menu?.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  });
+</script>

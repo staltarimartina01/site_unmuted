@@ -1,0 +1,36 @@
+---
+interface Props {
+  url?: string;
+  minHeight?: string;
+}
+const {
+  url = 'https://calendly.com/martina-staltari/chiamata-conoscitiva',
+  minHeight = '650px',
+} = Astro.props;
+---
+
+<div class="calendly-wrapper" id="calendly">
+  <div
+    class="calendly-inline-widget"
+    data-url={url}
+    style={`min-width: 320px; height: ${minHeight};`}
+  ></div>
+</div>
+
+<script is:inline>
+  (function() {
+    var script = document.createElement('script');
+    script.src = 'https://assets.calendly.com/assets/external/widget.js';
+    script.async = true;
+    document.head.appendChild(script);
+  })();
+</script>
+
+<style>
+  .calendly-wrapper {
+    background-color: var(--color-broken-white);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 32px rgba(30, 61, 66, 0.08);
+  }
+</style>

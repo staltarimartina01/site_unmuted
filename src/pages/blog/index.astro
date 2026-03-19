@@ -1,0 +1,386 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+const allArticles = await getCollection('blog');
+const articles = allArticles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const featuredArticle = articles.find(a => a.data.featured);
+const regularArticles = articles.filter(a => !a.data.featured);
+
+const dateFormatter = new Intl.DateTimeFormat('it-IT', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout title="Articoli" description="Riflessioni su lingua, psicologia e comunicazione autentica. Il blog di Martina Staltari – UNMUTED.">
+  <Header slot="header" />
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-label animate-fade-in-up">Riflessioni</p>
+      <h1 class="animate-fade-in-up animate-delay-100">Articoli</h1>
+      <p class="page-subtitle animate-fade-in-up animate-delay-200">Parole che aprono porte. Idee che smuovono qualcosa dentro.</p>
+    </div>
+  </section>
+
+  <section class="section blog-section">
+    <div class="container">
+      {articles.length === 0 ? (
+        <p class="empty-state">I primi articoli sono in arrivo. Torna presto.</p>
+      ) : (
+        <>
+          {/* Featured article */}
+          {featuredArticle && (
+            <a href={`/blog/${featuredArticle.id}`} class="featured-article">
+              <div class="featured-meta">
+                <span class="featured-badge">articolo in evidenza</span>
+                <time datetime={featuredArticle.data.date.toISOString()}>
+                  {dateFormatter.format(featuredArticle.data.date)}
+                </time>
+              </div>
+              {featuredArticle.data.tags.length > 0 && (
+                <div class="blog-tags">
+                  {featuredArticle.data.tags.map(tag => <span class="tag">{tag}</span>)}
+                </div>
+              )}
+              <h2>{featuredArticle.data.title}</h2>
+              <p class="featured-desc">{featuredArticle.data.description}</p>
+              <span class="read-more">Leggi l'articolo →</span>
+            </a>
+          )}
+
+          {/* Regular articles grid */}
+          {regularArticles.length > 0 && (
+            <>
+              {featuredArticle && <div class="grid-divider"><span>Tutti gli articoli</span></div>}
+              <div class="blog-grid">
+                {regularArticles.map((article) => (
+                  <article class="blog-card">
+                    <div class="blog-card-meta">
+                      <time datetime={article.data.date.toISOString()}>
+                        {dateFormatter.format(article.data.date)}
+                      </time>
+                      {article.data.tags.length > 0 && (
+                        <div class="blog-tags">
+                          {article.data.tags.map(tag => <span class="tag">{tag}</span>)}
+                        </div>
+                      )}
+                    </div>
+                    <h2><a href={`/blog/${article.id}`}>{article.data.title}</a></h2>
+                    <p class="blog-desc">{article.data.description}</p>
+                    <a href={`/blog/${article.id}`} class="read-more">Continua a leggere →</a>
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* If no featuredArticle, show all in grid */}
+          {!featuredArticle && (
+            <div class="blog-grid">
+              {articles.map((article) => (
+                <article class="blog-card">
+                  <div class="blog-card-meta">
+                    <time datetime={article.data.date.toISOString()}>
+                      {dateFormatter.format(article.data.date)}
+                    </time>
+                    {article.data.tags.length > 0 && (
+                      <div class="blog-tags">
+                        {article.data.tags.map(tag => <span class="tag">{tag}</span>)}
+                      </div>
+                    )}
+                  </div>
+                  <h2><a href={`/blog/${article.id}`}>{article.data.title}</a></h2>
+                  <p class="blog-desc">{article.data.description}</p>
+                  <a href={`/blog/${article.id}`} class="read-more">Continua a leggere →</a>
+                </article>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  </section>
+
+  <!-- Newsletter nudge -->
+  <section class="newsletter-section">
+    <div class="container newsletter-wrapper">
+      <div class="newsletter-label">Non perdere i prossimi articoli</div>
+      <h2 class="newsletter-title">Iscriviti alla newsletter</h2>
+      <p class="newsletter-desc">Riflessioni su lingua, psicologia e comunicazione — direttamente nella tua casella.</p>
+      <a href="/contatti" class="btn btn-outline-white newsletter-btn">Rimani in contatto</a>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* ── Hero ─────────────────────────────────── */
+  .page-hero {
+    background-color: var(--color-navy);
+    padding-block: 6.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::after {
+    content: '✦';
+    position: absolute;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(8rem, 15vw, 16rem);
+    color: rgba(255, 255, 255, 0.03);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .page-hero h1 {
+    color: var(--color-cloud);
+    margin-bottom: 1rem;
+  }
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    margin-bottom: 1rem;
+  }
+  .page-subtitle {
+    color: rgba(248, 249, 251, 0.75);
+    font-size: 1.1rem;
+    max-width: 50ch;
+    line-height: 1.8;
+  }
+
+  /* ── Blog section ──────────────────────────── */
+  .blog-section {
+    background-color: var(--color-cloud);
+  }
+
+  /* ── Featured article ──────────────────────── */
+  .featured-article {
+    display: block;
+    background-color: var(--color-navy);
+    color: var(--color-cloud);
+    border-radius: 4px;
+    padding: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 3.5rem;
+    text-decoration: none;
+    transition: var(--transition-base);
+    position: relative;
+    overflow: hidden;
+  }
+  .featured-article::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201, 168, 107, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .featured-article:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 60px rgba(26, 48, 94, 0.3);
+  }
+  .featured-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .featured-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    border: 1px solid rgba(201, 168, 107, 0.45);
+    padding: 0.3rem 0.85rem;
+    border-radius: 2px;
+  }
+  .featured-meta time {
+    font-size: 0.78rem;
+    color: rgba(248, 249, 251, 0.5);
+  }
+  .featured-article .blog-tags {
+    margin-bottom: 1.25rem;
+  }
+  .featured-article h2 {
+    color: var(--color-cloud);
+    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+    margin-bottom: 1rem;
+    line-height: 1.25;
+  }
+  .featured-desc {
+    color: rgba(248, 249, 251, 0.75);
+    font-size: 1.1rem;
+    max-width: 62ch;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+  .featured-article .read-more {
+    color: var(--color-gold);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Grid divider ──────────────────────────── */
+  .grid-divider {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .grid-divider::before,
+  .grid-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--color-sand);
+  }
+  .grid-divider span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-navy);
+    opacity: 0.4;
+    white-space: nowrap;
+  }
+
+  /* ── Blog grid ─────────────────────────────── */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2.5rem;
+  }
+  .blog-card {
+    background-color: var(--color-sand);
+    border: 1px solid var(--color-sand);
+    border-radius: 4px;
+    padding: 2.5rem;
+    transition: var(--transition-base);
+    display: flex;
+    flex-direction: column;
+  }
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(26, 48, 94, 0.1);
+    border-color: var(--color-navy);
+  }
+  .blog-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .blog-card-meta time {
+    font-size: 0.78rem;
+    color: var(--color-navy);
+    opacity: 0.6;
+    font-weight: 600;
+  }
+  .blog-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-size: 0.65rem;
+    background-color: var(--color-navy);
+    color: var(--color-cloud);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .blog-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  .blog-card h2 a {
+    text-decoration: none;
+    color: var(--color-navy);
+    transition: color 0.2s;
+  }
+  .blog-card h2 a:hover {
+    color: var(--color-red);
+  }
+  .blog-desc {
+    font-size: 0.92rem;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+    flex: 1;
+  }
+  .read-more {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+    align-self: flex-start;
+    border-bottom: 1px solid rgba(26, 48, 94, 0.2);
+  }
+  .read-more:hover {
+    color: var(--color-red);
+    border-color: var(--color-red);
+  }
+  .empty-state {
+    text-align: center;
+    font-family: var(--font-quote);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--color-navy);
+    opacity: 0.5;
+    padding: 4rem 0;
+  }
+
+  /* ── Newsletter section ──────────────────── */
+  .newsletter-section {
+    background-color: var(--color-navy);
+    padding-block: 6rem;
+  }
+  .newsletter-wrapper {
+    text-align: center;
+    max-width: 600px;
+  }
+  .newsletter-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    margin-bottom: 1rem;
+  }
+  .newsletter-title {
+    color: var(--color-cloud);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    margin-bottom: 1.25rem;
+  }
+  .newsletter-desc {
+    color: rgba(248, 249, 251, 0.75);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+  .newsletter-btn {
+    border-color: rgba(248, 249, 251, 0.4);
+    color: var(--color-white) !important;
+  }
+  .newsletter-btn:hover {
+    background-color: var(--color-cloud);
+    border-color: var(--color-cloud);
+    color: var(--color-navy) !important;
+  }
+
+</style>

@@ -1,0 +1,255 @@
+/* ============================================================
+   UNMUTED – Global Styles (Oxford Academic)
+   Brand: Royal Navy #1A305E | Heritage Red #B22222 | Soft Gold #C9A86B
+          Warm Sand #E8D5C4  | Cloud White #F8F9FB
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+
+@import "tailwindcss";
+
+/* ── Design Tokens ───────────────────────────────────────── */
+:root {
+  --color-navy: #1A305E;
+  --color-navy-dark: #122245;
+  --color-red: #B22222;
+  --color-red-dark: #8B1A1A;
+  --color-cloud: #F8F9FB;
+  --color-sand: #E8D5C4;
+  --color-sand-light: #f2e8de;
+  --color-charcoal: #2F2F2F;
+  --color-white: #ffffff;
+
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-quote: 'Cormorant Garamond', Georgia, serif;
+
+  --transition-base: all 0.3s ease-in-out;
+  --grain-opacity: 0.025;
+}
+
+@theme {
+  --color-navy: #1A305E;
+  --color-navy-dark: #122245;
+  --color-red: #B22222;
+  --color-red-dark: #8B1A1A;
+  --color-cloud: #F8F9FB;
+  --color-sand: #E8D5C4;
+  --color-sand-light: #f2e8de;
+  --color-charcoal: #2F2F2F;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-quote: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* ── Base Reset ──────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cloud);
+  color: var(--color-navy);
+  line-height: 1.7;
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Subtle paper grain texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── Typography ──────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--color-navy);
+}
+
+h1 {
+  font-size: clamp(2.4rem, 5vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+}
+
+h3 {
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+}
+
+p {
+  max-width: 70ch;
+}
+
+blockquote,
+.quote {
+  font-family: var(--font-quote);
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  font-style: italic;
+  color: var(--color-navy);
+  border-left: 3px solid var(--color-red);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: var(--transition-base);
+}
+
+a:hover {
+  text-decoration-color: var(--color-red);
+}
+
+/* ── Utility Classes ─────────────────────────────────────── */
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.section {
+  padding-block: 5rem;
+}
+
+.section-sm {
+  padding-block: 3rem;
+}
+
+/* ── Button Base ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  padding: 0.85rem 2rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+  text-decoration: none;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--color-red);
+  color: var(--color-white);
+  border-color: var(--color-red);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-red-dark);
+  border-color: var(--color-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(178, 34, 34, 0.35);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-navy);
+  border-color: var(--color-navy);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-navy);
+  color: var(--color-cloud);
+  transform: translateY(-2px);
+}
+
+.btn-outline-white {
+  background-color: transparent;
+  color: var(--color-cloud);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-outline-white:hover {
+  background-color: var(--color-cloud);
+  color: var(--color-navy);
+}
+
+/* ── Card Base ───────────────────────────────────────────── */
+.card {
+  background-color: var(--color-sand);
+  border-radius: 4px;
+  padding: 2rem;
+  transition: var(--transition-base);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(30, 61, 66, 0.12);
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s ease-out both;
+}
+
+.animate-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cloud);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-sand);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-red);
+}

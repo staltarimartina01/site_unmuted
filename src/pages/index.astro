@@ -1,0 +1,402 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+import { getCollection, render } from 'astro:content';
+
+const featuredReviews = (await getCollection('reviews'))
+  .filter(r => r.data.featured)
+  .slice(0, 2);
+---
+
+<BaseLayout title="Home">
+  <Header slot="header" />
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container hero-content">
+      <p class="hero-eyebrow animate-fade-in-up">Inglese. Psicologia. Trasformazione.</p>
+      <h1 class="hero-title animate-fade-in-up animate-delay-100">
+        Libera la tua voce.<br />
+        <em>Oltre i limiti.</em>
+      </h1>
+      <p class="hero-subtitle animate-fade-in-up animate-delay-200">
+        Non è solo lingua. È il coraggio di esprimerti davvero. Con il metodo UNMUTED scopri cos'ha sempre bloccato la tua voce — e come sbloccarla per sempre.
+      </p>
+      <div class="hero-ctas animate-fade-in-up animate-delay-300">
+        <Button href="/contatti#calendly" size="lg">Prenota una chiamata gratuita</Button>
+        <Button href="/reviews" variant="outline-white" size="lg">Leggi le storie</Button>
+      </div>
+    </div>
+    <div class="hero-scroll-hint" aria-hidden="true">
+      <span>↓</span>
+    </div>
+  </section>
+
+  <!-- IL BLOCCO CHE CONOSCI -->
+  <section class="section blocco-section">
+    <div class="container">
+      <div class="blocco-grid">
+        <div class="blocco-text">
+          <p class="section-label">Il blocco che conosci</p>
+          <h2>Sai cosa vuoi dire, ma le parole non escono.</h2>
+          <p>
+            Ti blocchi a metà frase. Ti sembra di diventare un'altra persona appena parli inglese. La paura del giudizio ti congela, la grammatica che credevi di sapere svanisce nel momento in cui conta.
+          </p>
+          <p>
+            Non è un problema di grammatica. Non è un problema di vocabolario. <strong>È psicologia.</strong>
+          </p>
+          <p>
+            Il metodo UNMUTED unisce insegnamento linguistico e comprensione dei blocchi interni per farti tornare ad esprimerti con naturalezza — in inglese e nella vita.
+          </p>
+          <Button href="/contatti#calendly" class="mt-8">Prenota una chiamata</Button>
+        </div>
+        <div class="blocco-visual">
+          <blockquote>
+            "Studiavo inglese da anni, ma appena aprivo la bocca dimenticavo tutto. Con Martina ho capito finalmente perché — e ho smesso di farlo."
+          </blockquote>
+          <div class="blocco-signature">— Giulia, 32 anni</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESSO -->
+  <section class="section processo-section">
+    <div class="container">
+      <p class="section-label centered">Come funziona</p>
+      <h2 class="centered">Tre passi verso la tua voce autentica</h2>
+      <div class="processo-grid">
+        <div class="processo-step">
+          <span class="step-number">01</span>
+          <h3>Scopri il blocco</h3>
+          <p>Identifichiamo insieme cosa impedisce alla tua voce di fluire: credenze, paure, esperienze passate.</p>
+        </div>
+        <div class="processo-step">
+          <span class="step-number">02</span>
+          <h3>Lavora con il metodo</h3>
+          <p>Sessioni personalizzate che uniscono pratica linguistica reale e strumenti psicologici efficaci.</p>
+        </div>
+        <div class="processo-step">
+          <span class="step-number">03</span>
+          <h3>Libera la tua voce</h3>
+          <p>Esprimi te stesso in inglese con sicurezza, spontaneità e autentica soddisfazione.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PREVIEW RECENSIONI (featured) -->
+  {featuredReviews.length > 0 && (
+    <section class="section reviews-preview-section">
+      <div class="container">
+        <p class="section-label centered">Storie vere</p>
+        <h2 class="centered">Chi ha già liberato la sua voce</h2>
+        <div class="reviews-grid">
+          {featuredReviews.map(async (review) => {
+            const { Content } = await render(review);
+            return (
+              <Card>
+                <div class="review-stars" aria-label={`${review.data.rating} stelle su 5`}>
+                  {'★'.repeat(review.data.rating)}{'☆'.repeat(5 - review.data.rating)}
+                </div>
+                <div class="review-quote-content">
+                  <Content />
+                </div>
+                <div class="review-author">
+                  <strong>{review.data.name}</strong>
+                  {review.data.role && <span>{review.data.role}</span>}
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+        <div class="centered" style="margin-top: 2.5rem;">
+          <Button href="/reviews" variant="outline">Leggi tutte le storie</Button>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- FINAL CTA -->
+  <section class="cta-final-section">
+    <div class="container">
+      <h2>Pronta a smettere di tacere?</h2>
+      <p>Una chiamata gratuita di 30 minuti per capire dove sei e dove vuoi arrivare. Nessun impegno. Solo chiarezza.</p>
+      <Button href="/contatti#calendly" size="lg">Prenota la tua chiamata gratuita →</Button>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background-color: var(--color-navy);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(178, 34, 34, 0.12) 0%, transparent 70%),
+                linear-gradient(135deg, #1A305E 0%, #122245 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    padding-block: 6rem;
+    max-width: 800px;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-bottom: 1.2rem;
+    max-width: none;
+  }
+
+  .hero-title {
+    color: var(--color-cloud);
+    margin-bottom: 1.5rem;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+  }
+
+  .hero-title em {
+    color: var(--color-red);
+    font-style: italic;
+  }
+
+  .hero-subtitle {
+    color: rgba(248, 249, 251, 0.78);
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    max-width: 55ch;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(248, 249, 251, 0.4);
+    font-size: 1.5rem;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  /* BLOCCO SECTION */
+  .blocco-section {
+    background-color: var(--color-cloud);
+  }
+
+  .blocco-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-bottom: 1rem;
+    max-width: none;
+  }
+
+  .centered {
+    text-align: center;
+  }
+
+  .blocco-text h2 {
+    margin-bottom: 1.5rem;
+  }
+
+  .blocco-text p {
+    margin-bottom: 1.2rem;
+  }
+
+  .blocco-visual {
+    background-color: var(--color-sand);
+    border-radius: 4px;
+    padding: 3rem 2.5rem;
+    color: var(--color-navy);
+  }
+
+  .blocco-visual blockquote {
+    font-size: 1.25rem;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.6;
+  }
+
+  .blocco-signature {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--color-navy);
+    font-weight: 600;
+  }
+
+  .mt-8 { margin-top: 2rem; }
+
+  /* PROCESSO */
+  .processo-section {
+    background-color: var(--color-cloud);
+    border-top: 1px solid rgba(26, 48, 94, 0.05);
+  }
+
+  .processo-section h2 {
+    margin-bottom: 3rem;
+  }
+
+  .processo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .processo-step {
+    background: var(--color-white);
+    border-radius: 4px;
+    padding: 2.5rem 2rem;
+    border-top: 3px solid var(--color-navy);
+    transition: var(--transition-base);
+    box-shadow: 0 4px 20px rgba(26, 48, 94, 0.04);
+  }
+
+  .processo-step:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(26, 48, 94, 0.08);
+  }
+
+  .step-number {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    color: var(--color-sand);
+    display: block;
+    margin-bottom: 1rem;
+    line-height: 1;
+  }
+
+  .processo-step h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1.15rem;
+    color: var(--color-navy);
+  }
+
+  .processo-step p {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  /* REVIEWS PREVIEW */
+  .reviews-preview-section {
+    background-color: var(--color-cloud);
+  }
+
+  .reviews-preview-section h2 {
+    margin-bottom: 3rem;
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .review-stars {
+    color: var(--color-red);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    margin-bottom: 1rem;
+  }
+
+  .review-quote-content {
+    font-family: var(--font-quote);
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--color-navy);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .review-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.85rem;
+    color: var(--color-navy);
+  }
+
+  .review-author strong {
+    font-weight: 700;
+  }
+
+  .review-author span {
+    opacity: 0.7;
+    font-size: 0.78rem;
+  }
+
+  /* FINAL CTA */
+  .cta-final-section {
+    background-color: var(--color-navy);
+    padding-block: 6rem;
+    text-align: center;
+  }
+
+  .cta-final-section h2 {
+    color: var(--color-cloud);
+    margin-bottom: 1.2rem;
+  }
+
+  .cta-final-section p {
+    color: rgba(248, 249, 251, 0.72);
+    font-size: 1.05rem;
+    margin-bottom: 2.5rem;
+    margin-inline: auto;
+    max-width: 50ch;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .blocco-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .processo-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-ctas {
+      flex-direction: column;
+    }
+  }
+</style>

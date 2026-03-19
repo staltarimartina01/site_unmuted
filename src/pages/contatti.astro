@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Button from '../components/Button.astro';
+import CalendlyEmbed from '../components/CalendlyEmbed.astro';
+---
+
+<BaseLayout title="Contatti" description="Scrivimi o prenota una chiamata gratuita. UNMUTED – Martina Staltari, insegnante di inglese con approccio psicologico.">
+  <Header slot="header" />
+
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-label">Parliamoci</p>
+      <h1>Inizia il tuo percorso</h1>
+      <p class="page-subtitle">Una chiamata. Una conversazione onesta. Il primo passo verso la tua voce libera.</p>
+    </div>
+  </section>
+
+  <section class="contact-section section">
+    <div class="container contact-grid">
+
+      <!-- FORM -->
+      <div class="form-col">
+        <h2>Scrivimi un messaggio</h2>
+        <p>Se hai dubbi, domande o vuoi raccontarmi dove sei adesso, sono qui.</p>
+        <form class="contact-form" name="contact" method="POST" action="/success">
+          <div class="form-group">
+            <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" placeholder="Il tuo nome" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="la-tua@email.com" required />
+          </div>
+          <div class="form-group">
+            <label for="messaggio">Messaggio</label>
+            <textarea id="messaggio" name="messaggio" rows="5" placeholder="Raccontami dove sei e dove vorresti arrivare..." required></textarea>
+          </div>
+          <Button type="submit" size="lg">Invia il messaggio</Button>
+        </form>
+      </div>
+
+      <!-- CALENDLY -->
+      <div class="calendly-col">
+        <h2>Oppure prenota direttamente</h2>
+        <p>Una chiamata gratuita di 30 minuti per capire se il metodo UNMUTED fa per te.</p>
+        <CalendlyEmbed />
+        <div class="calendly-note">
+          <span>🔒</span>
+          <p>Nessun impegno. Solo chiarezza su dove vuoi arrivare.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  .page-hero {
+    background-color: var(--color-navy);
+    padding-block: 6.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::after {
+    content: '?';
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-heading);
+    font-size: clamp(12rem, 20vw, 22rem);
+    color: rgba(255, 255, 255, 0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .page-hero h1 {
+    color: var(--color-cloud);
+    margin-bottom: 1rem;
+  }
+  .section-label {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    margin-bottom: 1rem;
+  }
+  .page-subtitle {
+    color: rgba(248, 249, 251, 0.75);
+    font-size: 1.15rem;
+    max-width: 50ch;
+    line-height: 1.8;
+  }
+
+  .contact-section {
+    background-color: var(--color-cloud);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+  .form-col h2, .calendly-col h2 {
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    color: var(--color-navy);
+  }
+  .form-col > p, .calendly-col > p {
+    opacity: 0.8;
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
+  }
+
+  /* Form */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-navy);
+    opacity: 0.8;
+  }
+  input[type="text"], input[type="email"], textarea {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    background-color: var(--color-white);
+    border: 1.5px solid var(--color-sand);
+    border-radius: 2px;
+    padding: 0.9rem 1.1rem;
+    color: var(--color-navy);
+    transition: var(--transition-base);
+    width: 100%;
+  }
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--color-navy);
+    box-shadow: 0 0 0 4px rgba(26, 48, 94, 0.05);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 150px;
+  }
+
+  /* Calendly note */
+  .calendly-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background-color: var(--color-sand);
+    border-radius: 4px;
+    border-left: 3px solid var(--color-navy);
+  }
+  .calendly-note span {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .calendly-note p {
+    font-size: 0.85rem;
+    color: var(--color-navy);
+    opacity: 0.8;
+    max-width: none;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 768px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 3.5rem;
+    }
+  }
+</style>

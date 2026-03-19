@@ -1,0 +1,121 @@
+---
+// Footer.astro – UNMUTED
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">UNMUTED</a>
+      <p class="footer-tagline">Libera la tua voce. Oltre i limiti.</p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Esplora</h4>
+        <a href="/reviews">Storie di successo</a>
+        <a href="/blog">Articoli</a>
+        <a href="/risorse">Risorse Didattiche</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contatti</h4>
+        <a href="/contatti">Scrivimi</a>
+        <a href="/contatti#calendly">Prenota una chiamata</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <p>&copy; {new Date().getFullYear()} Martina Staltari – UNMUTED. Tutti i diritti riservati.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background-color: var(--color-navy);
+    color: rgba(248, 249, 251, 0.75);
+    margin-top: auto;
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    padding-block: 4rem;
+  }
+
+  .footer-logo {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-cloud);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-tagline {
+    font-family: var(--font-quote);
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--color-red);
+    max-width: 30ch;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 3rem;
+    justify-content: flex-end;
+  }
+
+  .footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .footer-col h4 {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-bottom: 0.5rem;
+  }
+
+  .footer-col a {
+    font-size: 0.9rem;
+    color: rgba(248, 249, 251, 0.7);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-col a:hover {
+    color: var(--color-cloud);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-block: 1.2rem;
+  }
+
+  .footer-bottom p {
+    font-size: 0.8rem;
+    color: rgba(248, 249, 251, 0.4);
+    max-width: none;
+  }
+
+  @media (max-width: 640px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      padding-block: 3rem;
+    }
+    .footer-links {
+      justify-content: flex-start;
+    }
+  }
+</style>

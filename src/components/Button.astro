@@ -1,0 +1,48 @@
+---
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'outline' | 'outline-white';
+  size?: 'sm' | 'md' | 'lg';
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  id?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  type = 'button',
+  class: className = '',
+  id,
+} = Astro.props;
+
+const variantClass = {
+  primary: 'btn-primary',
+  outline: 'btn-outline',
+  'outline-white': 'btn-outline-white',
+}[variant];
+
+const sizeMap = {
+  sm: 'btn-sm',
+  md: '',
+  lg: 'btn-lg',
+};
+---
+
+{href ? (
+  <a href={href} class:list={['btn', variantClass, sizeMap[size], className]} id={id}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class:list={['btn', variantClass, sizeMap[size], className]} id={id}>
+    <slot />
+  </button>
+)}
+
+<style>
+  .btn-lg {
+    padding: 1.1rem 2.5rem;
+    font-size: 1rem;
+  }
+</style>

@@ -1,0 +1,437 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+interface Props { post: CollectionEntry<'blog'>; }
+const { post } = Astro.props;
+const { Content } = await render(post);
+const dateFormatter = new Intl.DateTimeFormat('it-IT', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// Get related posts (same tag, excluding current)
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter(p => p.id !== post.id && p.data.tags.some(tag => post.data.tags.includes(tag)))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <Header slot="header" />
+
+  <article class="blog-article" itemscope itemtype="https://schema.org/Article">
+
+    <!-- Article Header -->
+    <header class="article-header">
+      <div class="container">
+        <div class="article-meta">
+          <a href="/blog" class="back-link">← Tutti gli articoli</a>
+          <time datetime={post.data.date.toISOString()} itemprop="datePublished">
+            {dateFormatter.format(post.data.date)}
+          </time>
+        </div>
+        {post.data.tags.length > 0 && (
+          <div class="article-tags">
+            {post.data.tags.map(tag => <span class="tag">{tag}</span>)}
+          </div>
+        )}
+        <h1 itemprop="headline">{post.data.title}</h1>
+        <p class="article-desc">{post.data.description}</p>
+
+        <!-- Author inline -->
+        <div class="author-inline" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <span class="author-avatar" aria-hidden="true">MS</span>
+          <div>
+            <span class="author-name" itemprop="name">Martina Staltari</span>
+            <span class="author-role">Coach linguistica & UNMUTED</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Article Body -->
+    <div class="article-body">
+      <div class="container">
+        <div class="article-content" itemprop="articleBody">
+          <Content />
+        </div>
+
+        <!-- Share nudge -->
+        <div class="share-nudge">
+          <span class="share-icon" aria-hidden="true">✦</span>
+          Ti ha toccato qualcosa di questo articolo? Condividilo con chi potrebbe averne bisogno.
+        </div>
+      </div>
+    </div>
+
+    <!-- Author Bio -->
+    <div class="author-bio-section">
+      <div class="container">
+        <div class="author-bio">
+          <div class="author-bio-avatar" aria-label="Martina Staltari">MS</div>
+          <div class="author-bio-content">
+            <p class="author-bio-label">Scritta da</p>
+            <h3 class="author-bio-name">Martina Staltari</h3>
+            <p class="author-bio-text">
+              Sono una coach linguistica specializzata nei blocchi psicologici legati all'inglese. Con il metodo UNMUTED aiuto professionisti e freelance a liberare la propria voce — non solo in inglese, ma nella vita.
+            </p>
+            <a href="/contatti#calendly" class="btn btn-primary author-bio-btn">Lavora con me</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related posts -->
+    {relatedPosts.length > 0 && (
+      <div class="related-section">
+        <div class="container">
+          <p class="section-label">Continua a esplorare</p>
+          <h2 class="related-title">Articoli correlati</h2>
+          <div class="related-grid">
+            {relatedPosts.map(rPost => (
+              <a href={`/blog/${rPost.id}`} class="related-card">
+                {rPost.data.tags.length > 0 && (
+                  <div class="related-tags">
+                    {rPost.data.tags.slice(0,2).map(tag => <span class="tag">{tag}</span>)}
+                  </div>
+                )}
+                <h3>{rPost.data.title}</h3>
+                <p>{rPost.data.description}</p>
+                <span class="read-more">Leggi →</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- CTA Footer -->
+    <div class="article-footer">
+      <div class="container article-footer-inner">
+        <a href="/blog" class="btn btn-outline">← Torna agli articoli</a>
+        <a href="/contatti#calendly" class="btn btn-primary">Prenota una chiamata gratuita</a>
+      </div>
+    </div>
+
+  </article>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* ── Article Header ─────────────────────────── */
+  .article-header {
+    background-color: var(--color-navy);
+    padding-block: 6.5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .article-header::after {
+    content: '"';
+    position: absolute;
+    right: 2%;
+    bottom: -10%;
+    font-family: var(--font-heading);
+    font-size: clamp(10rem, 18vw, 20rem);
+    color: rgba(255, 255, 255, 0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .article-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .back-link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--color-gold);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: opacity 0.2s;
+    text-transform: uppercase;
+  }
+  .back-link:hover { opacity: 0.75; }
+  .article-meta time {
+    font-size: 0.78rem;
+    color: rgba(248, 249, 251, 0.5);
+  }
+  .article-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .tag {
+    font-size: 0.65rem;
+    background-color: rgba(201, 168, 107, 0.15);
+    color: var(--color-gold);
+    padding: 0.2rem 0.65rem;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+  .article-header h1 {
+    color: var(--color-cloud);
+    margin-bottom: 1rem;
+    max-width: 18ch;
+  }
+  .article-desc {
+    color: rgba(248, 249, 251, 0.75);
+    font-size: 1.15rem;
+    max-width: 62ch;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+  }
+
+  /* ── Author inline ─────────────────────────── */
+  .author-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .author-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--color-gold);
+    color: var(--color-navy);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: -0.5px;
+  }
+  .author-name {
+    display: block;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-cloud);
+  }
+  .author-role {
+    display: block;
+    font-size: 0.75rem;
+    color: rgba(248, 249, 251, 0.5);
+    margin-top: 0.1rem;
+  }
+
+  /* ── Article Body ───────────────────────────── */
+  .article-body {
+    padding-block: 5rem;
+    background-color: var(--color-cloud);
+  }
+  .article-content {
+    max-width: 680px;
+    font-size: 1.1rem;
+    line-height: 1.9;
+  }
+  .article-content h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1.25rem;
+    font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+    color: var(--color-navy);
+  }
+  .article-content h3 { margin-top: 2.5rem; margin-bottom: 1rem; color: var(--color-navy); }
+  .article-content p {
+    margin-bottom: 1.5rem;
+    max-width: 70ch;
+  }
+  .article-content ul,
+  .article-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .article-content li { margin-bottom: 0.75rem; }
+  .article-content strong { color: var(--color-navy); font-weight: 700; }
+  .article-content blockquote {
+    font-family: var(--font-quote);
+    font-style: italic;
+    font-size: 1.3rem;
+    color: var(--color-navy);
+    border-left: 4px solid var(--color-red);
+    padding-left: 2rem;
+    margin: 3rem 0;
+    line-height: 1.6;
+  }
+
+  /* ── Share nudge ────────────────────────────── */
+  .share-nudge {
+    margin-top: 4rem;
+    padding: 1.5rem 2rem;
+    background-color: var(--color-sand);
+    border-left: 4px solid var(--color-navy);
+    border-radius: 2px;
+    font-size: 0.95rem;
+    color: var(--color-navy);
+    max-width: 680px;
+    font-weight: 500;
+  }
+  .share-icon {
+    color: var(--color-navy);
+    margin-right: 0.5rem;
+    opacity: 0.5;
+  }
+
+  /* ── Author Bio ─────────────────────────────── */
+  .author-bio-section {
+    background-color: var(--color-sand);
+    border-block: 1px solid rgba(26, 48, 94, 0.05);
+    padding-block: 5rem;
+  }
+  .author-bio {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+    max-width: 760px;
+    align-items: start;
+  }
+  .author-bio-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: var(--color-navy);
+    color: var(--color-cloud);
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: -1px;
+  }
+  .author-bio-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-red-dark);
+    margin-bottom: 0.5rem;
+  }
+  .author-bio-name {
+    font-size: 1.4rem;
+    color: var(--color-navy);
+    margin-bottom: 1rem;
+  }
+  .author-bio-text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-navy);
+    max-width: 65ch;
+    margin-bottom: 2rem;
+  }
+  .author-bio-btn { font-size: 0.9rem; }
+
+  /* ── Related posts ─────────────────────────── */
+  .related-section {
+    background-color: var(--color-cloud);
+    padding-block: 5rem;
+    border-top: 1px solid rgba(26, 48, 94, 0.05);
+  }
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-bottom: 0.75rem;
+  }
+  .related-title {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    margin-bottom: 2.5rem;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  .related-card {
+    display: block;
+    padding: 2rem;
+    background-color: var(--color-sand);
+    border: 1px solid var(--color-sand);
+    border-radius: 4px;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-base);
+  }
+  .related-card:hover {
+    border-color: var(--color-navy);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 36px rgba(26, 48, 94, 0.08);
+  }
+  .related-tags { margin-bottom: 1rem; display: flex; gap: 0.4rem; }
+  .related-tags .tag {
+    background-color: var(--color-navy);
+    color: var(--color-cloud);
+  }
+  .related-card h3 {
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-navy);
+    line-height: 1.35;
+  }
+  .related-card p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+    max-width: 100%;
+  }
+  .read-more {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(26, 48, 94, 0.2);
+  }
+
+  /* ── Article Footer ─────────────────────────── */
+  .article-footer {
+    padding-block: 4rem;
+    background-color: var(--color-cloud);
+    border-top: 1px solid rgba(26, 48, 94, 0.1);
+  }
+  .article-footer-inner {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 640px) {
+    .author-bio {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .author-bio-avatar { width: 70px; height: 70px; font-size: 1.3rem; }
+  }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 640px) {
+    .author-bio {
+      grid-template-columns: 1fr;
+    }
+    .author-bio-avatar { width: 60px; height: 60px; font-size: 1.1rem; }
+  }
+</style>

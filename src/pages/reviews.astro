@@ -1,0 +1,443 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+const allReviews = await getCollection('reviews');
+const reviews = allReviews.sort((a, b) => {
+  if (a.data.featured && !b.data.featured) return -1;
+  if (!a.data.featured && b.data.featured) return 1;
+  const dateA = a.data.date ? new Date(a.data.date).getTime() : 0;
+  const dateB = b.data.date ? new Date(b.data.date).getTime() : 0;
+  return dateB - dateA;
+});
+
+const featuredReview = reviews.find(r => r.data.featured);
+const otherReviews = reviews.filter(r => !r.data.featured || r.id !== featuredReview?.id);
+
+const featuredContent = featuredReview ? await render(featuredReview) : null;
+const FeaturedReviewContent = featuredContent?.Content;
+---
+
+<BaseLayout title="Storie di successo" description="Leggi le storie reali di chi ha liberato la propria voce in inglese con il metodo UNMUTED di Martina Staltari.">
+  <Header slot="header" />
+
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-label animate-fade-in-up">Storie vere</p>
+      <h1 class="animate-fade-in-up animate-delay-100">Chi ha liberato<br/>la propria voce</h1>
+      <p class="page-subtitle animate-fade-in-up animate-delay-200">Le trasformazioni più belle sono quelle che arrivano da dentro. Leggi le esperienze di chi ha scelto di smettere di tacere.</p>
+    </div>
+  </section>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="container stats-row">
+      <div class="stat">
+        <span class="stat-number">+120</span>
+        <span class="stat-label">Persone risvegliata</span>
+      </div>
+      <div class="stat-divider" aria-hidden="true"></div>
+      <div class="stat">
+        <span class="stat-number">5★</span>
+        <span class="stat-label">Valutazione media</span>
+      </div>
+      <div class="stat-divider" aria-hidden="true"></div>
+      <div class="stat">
+        <span class="stat-number">3 mesi</span>
+        <span class="stat-label">Per sentire i risultati</span>
+      </div>
+      <div class="stat-divider" aria-hidden="true"></div>
+      <div class="stat">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">Online, dalla tua città</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured pull quote -->
+  {featuredReview && FeaturedReviewContent && (
+    <section class="section featured-section">
+      <div class="container featured-wrapper">
+        <div class="featured-badge">testimonianza in evidenza</div>
+        <div class="featured-stars" aria-label={`${featuredReview.data.rating} stelle su 5`}>
+          {'★'.repeat(featuredReview.data.rating)}{'☆'.repeat(5 - featuredReview.data.rating)}
+        </div>
+        <div class="featured-body">
+          <FeaturedReviewContent />
+        </div>
+        <footer class="featured-footer">
+          <div class="featured-avatar" aria-hidden="true">
+            {featuredReview.data.name.charAt(0)}
+          </div>
+          <div>
+            <strong>{featuredReview.data.name}</strong>
+            {featuredReview.data.role && <span>{featuredReview.data.role}</span>}
+          </div>
+        </footer>
+      </div>
+    </section>
+  )}
+
+  <!-- Grid of all other reviews -->
+  <section class="section reviews-section">
+    <div class="container">
+      {reviews.length === 0 ? (
+        <p class="empty-state">Le storie arriveranno presto. Vuoi essere la prima?</p>
+      ) : (
+        <>
+          {otherReviews.length > 0 && (
+            <div class="reviews-grid">
+              {otherReviews.map(async (review) => {
+                const { Content } = await render(review);
+                return (
+                  <article class="review-card">
+                    <div class="review-stars" aria-label={`${review.data.rating} stelle su 5`}>
+                      {'★'.repeat(review.data.rating)}{'☆'.repeat(5 - review.data.rating)}
+                    </div>
+                    <div class="review-body">
+                      <Content />
+                    </div>
+                    <footer class="review-footer">
+                      <div class="review-avatar" aria-hidden="true">
+                        {review.data.name.charAt(0)}
+                      </div>
+                      <div>
+                        <strong>{review.data.name}</strong>
+                        {review.data.role && <span>{review.data.role}</span>}
+                      </div>
+                    </footer>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  </section>
+
+  <!-- Pull Quote -->
+  <section class="pull-quote-section">
+    <div class="container">
+      <blockquote class="pull-quote">
+        Non ti insegno l'inglese perfetto. Ti insegno a smettere di aspettarlo.
+        <cite>— Martina Staltari</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="container cta-wrapper">
+      <p class="section-label">Il prossimo passo</p>
+      <h2>La tua storia inizia adesso</h2>
+      <p class="cta-desc">Anche tu puoi liberare la tua voce. Prenota una chiamata conoscitiva gratuita e scopriamo insieme cosa ti trattiene.</p>
+      <a href="/contatti#calendly" class="btn btn-primary cta-btn">Prenota la tua chiamata gratuita</a>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
+
+<style>
+  /* ── Hero ─────────────────────────────────── */
+  .page-hero {
+    background-color: var(--color-navy);
+    padding-block: 6rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-hero::after {
+    content: '"';
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--font-quote);
+    font-size: clamp(12rem, 20vw, 22rem);
+    color: rgba(255, 255, 255, 0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .page-hero h1 {
+    color: var(--color-cloud);
+    margin-bottom: 1rem;
+  }
+  .page-hero .section-label {
+    color: var(--color-red);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .page-subtitle {
+    color: rgba(248, 249, 251, 0.75);
+    font-size: 1.1rem;
+    max-width: 55ch;
+    line-height: 1.8;
+  }
+
+  /* ── Stats bar ─────────────────────────────── */
+  .stats-bar {
+    background-color: var(--color-red);
+    padding-block: 1.5rem;
+  }
+  .stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding-inline: 2.5rem;
+    flex: 1;
+    min-width: 140px;
+  }
+  .stat-number {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--color-white);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .stat-divider {
+    width: 1px;
+    height: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+  }
+
+  /* ── Featured ──────────────────────────────── */
+  .featured-section {
+    background-color: var(--color-navy);
+    padding-block: 5rem;
+  }
+  .featured-wrapper {
+    max-width: 760px;
+    position: relative;
+  }
+  .featured-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    border: 1px solid rgba(201, 168, 107, 0.4);
+    padding: 0.3rem 0.85rem;
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+  .featured-stars {
+    color: var(--color-gold);
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+    margin-bottom: 1.5rem;
+  }
+  .featured-body {
+    font-family: var(--font-quote);
+    font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+    font-style: italic;
+    color: var(--color-cloud);
+    line-height: 1.85;
+    margin-bottom: 2rem;
+    border-left: 3px solid var(--color-gold);
+    padding-left: 1.75rem;
+  }
+  .featured-body p { max-width: 100%; margin-bottom: 1rem; }
+  .featured-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .featured-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--color-gold);
+    color: var(--color-navy);
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .featured-footer strong {
+    display: block;
+    color: var(--color-cloud);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .featured-footer span {
+    font-size: 0.78rem;
+    color: rgba(248, 249, 251, 0.65);
+    display: block;
+    margin-top: 0.15rem;
+  }
+
+  /* ── Reviews grid ──────────────────────────── */
+  .reviews-section {
+    background-color: var(--color-cloud);
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+  .review-card {
+    background-color: var(--color-sand);
+    border: 1px solid var(--color-sand);
+    border-radius: 4px;
+    padding: 2.5rem;
+    transition: var(--transition-base);
+    display: flex;
+    flex-direction: column;
+  }
+  .review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(26, 48, 94, 0.1);
+    border-color: var(--color-navy);
+  }
+  .review-stars {
+    color: var(--color-red);
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin-bottom: 1.25rem;
+  }
+  .review-body {
+    font-family: var(--font-quote);
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--color-navy);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    flex: 1;
+  }
+  .review-body p { max-width: 100%; }
+  .review-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    border-top: 1px solid rgba(26, 48, 94, 0.1);
+    padding-top: 1.25rem;
+    margin-top: auto;
+  }
+  .review-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: var(--color-navy);
+    color: var(--color-cloud);
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .review-footer strong {
+    display: block;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-navy);
+  }
+  .review-footer span {
+    font-size: 0.78rem;
+    color: var(--color-navy);
+    opacity: 0.7;
+    display: block;
+    margin-top: 0.1rem;
+  }
+  .empty-state {
+    text-align: center;
+    font-family: var(--font-quote);
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--color-navy);
+    opacity: 0.5;
+    padding: 4rem 0;
+  }
+
+  /* ── Pull Quote ────────────────────────────── */
+  .pull-quote-section {
+    background-color: var(--color-cloud);
+    padding-block: 4rem;
+    border-block: 1px solid rgba(26, 48, 94, 0.05);
+  }
+  .pull-quote {
+    font-family: var(--font-quote);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-style: italic;
+    color: var(--color-navy);
+    border-left: 3px solid var(--color-red);
+    padding-left: 2rem;
+    max-width: 680px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .pull-quote cite {
+    display: block;
+    font-size: 0.82rem;
+    font-style: normal;
+    font-weight: 600;
+    color: var(--color-red-dark);
+    letter-spacing: 0.05em;
+    margin-top: 1.25rem;
+    text-transform: uppercase;
+  }
+
+  /* ── CTA ───────────────────────────────────── */
+  .cta-section {
+    background-color: var(--color-navy);
+  }
+  .cta-section .section-label {
+    color: var(--color-gold);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .cta-section h2 {
+    color: var(--color-cloud);
+    margin-bottom: 1rem;
+  }
+  .cta-desc {
+    color: rgba(248, 249, 251, 0.72);
+    font-size: 1.05rem;
+    max-width: 52ch;
+    line-height: 1.75;
+    margin-bottom: 2.5rem;
+  }
+  .cta-btn {
+    font-size: 0.9rem;
+  }
+
+  /* ── Responsive ────────────────────────────── */
+  @media (max-width: 640px) {
+    .stat-divider { display: none; }
+    .stat { padding-inline: 1rem; }
+  }
+</style>
