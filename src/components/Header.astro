@@ -1,5 +1,6 @@
 ---
-// Header.astro – UNMUTED Navigation
+import Logo from './Logo.astro';
+
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/reviews', label: 'Storie' },
@@ -14,13 +15,7 @@ const currentPath = Astro.url.pathname;
   <div class="container header-inner">
     <!-- Logo -->
     <a href="/" class="logo" aria-label="UNMUTED – Home">
-      <img
-        src="/assets/logo/unmuted-logo-v3.png"
-        alt="UNMUTED by Martina Staltari"
-        class="logo-img"
-        width="120"
-        height="120"
-      />
+      <Logo size="md" color="cloud" />
     </a>
 
     <!-- Desktop Nav -->
@@ -73,22 +68,10 @@ const currentPath = Astro.url.pathname;
     display: flex;
     align-items: center;
     text-decoration: none;
+    padding-block: 0.25rem;
   }
 
-  .logo-img {
-    height: 64px;
-    width: auto;
-    display: block;
-    transition: opacity 0.3s ease;
-  }
-
-  @media (min-width: 1024px) {
-    .logo-img {
-      height: 80px;
-    }
-  }
-
-  .logo:hover .logo-img {
+  .logo:hover {
     opacity: 0.85;
   }
 

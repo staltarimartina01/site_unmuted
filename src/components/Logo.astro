@@ -1,0 +1,100 @@
+---
+// src/components/Logo.astro
+// Componente Logo SVG per UNMUTED
+// Design: Cerchio interrotto da un puntino rosso, testo "unmuted" sotto.
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'custom';
+  color?: 'cloud' | 'gold' | 'navy' | string;
+  showText?: boolean;
+  className?: string;
+  width?: string; // Solo per size='custom'
+}
+
+const { 
+  size = 'md', 
+  showText = true, 
+  color = 'cloud',
+  className = '',
+  width: customWidth
+} = Astro.props;
+
+const colorMap: Record<string, string> = {
+  cloud: 'var(--color-cloud)',
+  gold: 'var(--color-gold)',
+  navy: 'var(--color-navy)',
+};
+
+const logoColor = colorMap[color] || color;
+
+const sizeMap: Record<string, string> = {
+  sm: '40px',
+  md: '80px',
+  lg: '120px',
+  xl: '160px',
+  custom: customWidth || '100px'
+};
+
+const widthValue = sizeMap[size];
+---
+
+<div class:list={["unmuted-logo", className]} style={`width: ${widthValue};`}>
+  <svg 
+    viewBox="0 0 100 135" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg" 
+    role="img" 
+    aria-label="UNMUTED by Martina Staltari"
+  >
+    <!-- Gruppo Icona -->
+    <g transform="translate(0, 5)">
+      <!-- Il cerchio: un path che parte quasi dal top, fa il giro e lascia un gap -->
+      <path 
+        d="M 50,15 A 35,35 0 1 1 49.9,15" 
+        stroke={logoColor} 
+        stroke-width="4.5" 
+        stroke-linecap="round"
+        stroke-dasharray="205 15"
+        stroke-dashoffset="-7"
+        class="circle-stroke"
+      />
+      <!-- Il puntino rosso che "interrompe" il cerchio al top center -->
+      <circle cx="50" cy="15" r="7" fill="var(--color-red)" class="red-dot" />
+    </g>
+
+    {showText && (
+      <text 
+        x="50" 
+        y="125" 
+        text-anchor="middle" 
+        fill={logoColor} 
+        style="font-family: var(--font-heading); font-size: 19px; font-weight: 600; letter-spacing: 0.18em; text-transform: lowercase;"
+      >
+        unmuted
+      </text>
+    )}
+  </svg>
+</div>
+
+<style>
+  .unmuted-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 0.3s ease;
+  }
+  
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .circle-stroke {
+    opacity: 0.9;
+  }
+
+  .red-dot {
+    filter: drop-shadow(0 0 4px rgba(178, 34, 34, 0.4));
+  }
+</style>
