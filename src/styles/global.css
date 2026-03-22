@@ -63,7 +63,8 @@ body {
   position: relative;
 }
 
-/* Subtle paper grain texture */
+/* Subtle paper grain texture removed as per user request (playback) */
+/* 
 body::before {
   content: '';
   position: fixed;
@@ -73,6 +74,7 @@ body::before {
   pointer-events: none;
   z-index: 9999;
 }
+*/
 
 /* ── Typography ──────────────────────────────────────────── */
 h1,
