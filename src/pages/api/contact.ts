@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     await resend.emails.send({
-      from: 'Synth Language Studio <noreply@synthlang.studio>',
+      from: 'Synth Language Studio <onboarding@resend.dev>',
       to,
       replyTo: email,
       subject: `Nuovo messaggio da ${nome}`,
