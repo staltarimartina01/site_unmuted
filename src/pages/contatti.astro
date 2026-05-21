@@ -6,7 +6,7 @@ import Button from '../components/Button.astro';
 import CalendlyEmbed from '../components/CalendlyEmbed.astro';
 ---
 
-<BaseLayout title="Contatti" description="Scrivimi o prenota una chiamata gratuita. UNMUTED – Martina Staltari, insegnante di inglese con approccio psicologico.">
+<BaseLayout title="Contatti" description="Scrivimi o prenota una chiamata gratuita. Synth Language Studio – Martina Staltari, insegnante di inglese con approccio psicologico.">
   <Header slot="header" />
 
   <section class="page-hero">
@@ -24,7 +24,7 @@ import CalendlyEmbed from '../components/CalendlyEmbed.astro';
       <div class="form-col">
         <h2>Scrivimi un messaggio</h2>
         <p>Se hai dubbi, domande o vuoi raccontarmi dove sei adesso, sono qui.</p>
-        <form class="contact-form" name="contact" method="POST" action="/success">
+        <form class="contact-form" id="contact-form" name="contact" method="POST">
           <div class="form-group">
             <label for="nome">Nome</label>
             <input type="text" id="nome" name="nome" placeholder="Il tuo nome" required />
@@ -38,13 +38,45 @@ import CalendlyEmbed from '../components/CalendlyEmbed.astro';
             <textarea id="messaggio" name="messaggio" rows="5" placeholder="Raccontami dove sei e dove vorresti arrivare..." required></textarea>
           </div>
           <Button type="submit" size="lg">Invia il messaggio</Button>
+          <div id="form-feedback" aria-live="polite" hidden></div>
         </form>
+        <script is:inline>
+          document.getElementById('contact-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.currentTarget;
+            const fb = document.getElementById('form-feedback');
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Invio in corso…';
+            try {
+              const res = await fetch('/api/contact', { method: 'POST', body: new FormData(form) });
+              const data = await res.json();
+              if (data.success) {
+                fb.hidden = false;
+                fb.className = 'feedback-success';
+                fb.textContent = 'Messaggio inviato! Ti rispondo al più presto.';
+                form.reset();
+              } else {
+                fb.hidden = false;
+                fb.className = 'feedback-error';
+                fb.textContent = data.error || 'Errore nell\'invio. Riprova.';
+              }
+            } catch {
+              fb.hidden = false;
+              fb.className = 'feedback-error';
+              fb.textContent = 'Errore di rete. Riprova più tardi.';
+            } finally {
+              btn.disabled = false;
+              btn.textContent = 'Invia il messaggio';
+            }
+          });
+        </script>
       </div>
 
       <!-- CALENDLY -->
       <div class="calendly-col">
         <h2>Oppure prenota direttamente</h2>
-        <p>Una chiamata gratuita di 30 minuti per capire se il metodo UNMUTED fa per te.</p>
+        <p>Una chiamata gratuita di 30 minuti per capire se il metodo SYNTH fa per te.</p>
         <CalendlyEmbed />
         <div class="calendly-note">
           <span>🔒</span>
@@ -180,6 +212,23 @@ import CalendlyEmbed from '../components/CalendlyEmbed.astro';
     max-width: none;
     margin: 0;
     line-height: 1.5;
+  }
+
+  #form-feedback {
+    font-size: 0.9rem;
+    padding: 1rem 1.2rem;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+  }
+  .feedback-success {
+    background-color: #e6f7e6;
+    color: #1a6b1a;
+    border: 1px solid #b2d8b2;
+  }
+  .feedback-error {
+    background-color: #fde8e8;
+    color: #b22222;
+    border: 1px solid #f5c6c6;
   }
 
   @media (max-width: 768px) {
